@@ -1,0 +1,137 @@
+In [5]: gpib.write(par, "DD 13")
+Out[5]: 8448
+
+In [6]: gpib.write(par, "ID")
+Out[6]: 8448
+
+In [7]: gpib.read(par, 1024)
+Out[7]: '2731\r'
+
+In [8]: gpib.serial_poll(par)
+Out[8]: '\x11'
+
+In [9]: gpib.write(par, "ST")
+Out[9]: 8448
+
+In [10]: gpib.read(par, 1024)
+Out[10]: '16\r'
+
+In [11]: gpib.write(par, "VER")
+Out[11]: 8448
+
+In [12]: gpib.read(par, 1024)
+Out[12]: '202\r'
+
+In [13]: gpib.write(par, 'TYPE Leszek"')
+Out[13]: 8448
+
+In [14]: gpib.write(par, 'TYPE Leszek Tarkowski Cztery Bity"')
+Out[14]: 8448
+
+In [15]: gpib.write(par, 'DCL;IRMODE 2;IRUPT 125;IRPC 100')
+Out[15]: 8448
+
+In [16]: gpib.serial_poll(par)
+Out[16]: '%'
+
+In [17]: gpib.serial_poll(par)
+Out[17]: '%'
+
+In [18]: gpib.write(par, 'I/E -4')
+Out[18]: 8448
+
+In [19]: gpib.serial_poll(par)
+Out[19]: '%'
+
+In [20]: gpib.write(par, 'SETE -1000')
+Out[20]: 8448
+
+In [21]: gpib.write(par, 'OUT 3')
+Out[21]: 8448
+
+In [22]: gpib.serial_poll(par)
+Out[22]: '%'
+
+In [23]: gpib.write(par, 'CS')
+Out[23]: 8448
+
+In [24]: gpib.serial_poll(par)
+Out[24]: '\xa4'
+
+In [25]: gpib.read(par, 1024)
+Out[25]: '0\r'
+
+In [26]: gpib.write(par, 'CS')
+Out[26]: 8448
+
+In [27]: gpib.read(par, 1024)
+Out[27]: '1\r'
+
+In [28]: gpib.serial_poll(par)
+Out[28]: '%'
+
+In [29]: gpib.write(par, 'CELL 1')
+Out[29]: 8448
+
+In [30]: gpib.serial_poll(par)
+Out[30]: '%'
+
+In [31]: gpib.write(par, 'READI')
+Out[31]: 8448
+
+In [32]: gpib.serial_poll(par)
+Out[32]: '\xb4'
+
+In [33]: gpib.read(par, 1024)
+Out[33]: '1115\r-8\r'
+
+In [34]: gpib.write(par, 'Q')
+Out[34]: 8448
+
+In [35]: gpib.read(par, 1024)
+Out[35]: '8348\r-7\r'
+
+In [36]: gpib.write(par, 'RUERR')
+Out[36]: 8448
+
+In [37]: gpib.serial_poll(par)
+Out[37]: '\xb4'
+
+In [38]: gpib.read(par, 1024)
+Out[38]: '-187\r'
+
+In [39]: gpib.write(par, 'USR1 READI;RUERR;Q;RUERR;CS;DUMMY')
+Out[39]: 8448
+
+In [40]: gpib.serial_poll(par)
+Out[40]: '5'
+
+In [41]: gpib.write(par, 'USR1')
+Out[41]: 8448
+
+In [42]: gpib.serial_poll(par)
+Out[42]: '\xb4'
+
+In [43]: gpib.read(par, 1024)
+Out[43]: '1161\r-8\r-165\r2091\r-6\r-165\r1\r1\r'
+
+In [44]: gpib.write(par, 'TYPE Leszek Tarkowski Cztery Bity"')
+Out[44]: 8448
+
+In [45]: gpib.serial_poll(par)
+Out[45]: '5'
+
+In [46]: gpib.write(par, 'CELL 0')
+Out[46]: 8448
+
+In [47]: gpib.write(par, 'USR1')
+Out[47]: 8448
+
+In [48]: gpib.serial_poll(par)
+Out[48]: '\xb4'
+
+In [49]: gpib.read(par, 1024)
+Out[49]: '1\r-9\r0\r2881\r-6\r0\r1\r1\r'
+
+In [50]: gpib.serial_poll(par)
+Out[50]: '5'

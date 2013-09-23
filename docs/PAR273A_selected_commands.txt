@@ -1,0 +1,223 @@
+ID
+	A READ command, ID (IDENTIFICATION) requests the Model 273A to report its model number (2731).
+
+CS
+	A READ command, CS (CELL SWITCH) requests that the Model 273A report the ON/OFF status of the Model 273A front-panel CELL ENABLE pushbutton. The codes are:
+	0 - OFF; 1 -ON
+
+DUMMY
+	A READ command, DUMMY requests the Model 273A to report the status of the toggle switch on the front panel of the Electrometer. The codes are:
+	0 - NOT SET TO DUMMY; 1 - SWITCH SET TO DUMMY
+
+DCL
+	An ACTION command, DCL (DEVICE CLEAR) restores the default parameter values with two exceptions: the MSK and DD operands do not change.
+
+CAL
+	An ACTION command, CAL (CALIBRATE) is used to calibrate the Model 273A. CAL has the same effect as keying in FUNCTION 21 from the front panel of the Model 273A. Before using CAL, allow the instrument to warm up for at least 1⁄2 hour.
+
+IRMODE 
+	A Set/Read command, IRMODE (IR COMPENSATION MODE) sets the IR Compensation mode. If "n" is omitted, the command requests the Model 273A to report this information. The codes are:	
+
+	0 NONE
+
+	1 POS. FEEDBACK Activates Positive Feedback IR Compensation and sets the IRcompensation resistance to the value specified by the SETIR command. See discussion of SETIR command before applying IRMODE 1. Note: Positive feedback is not available in the galvanostatic mode.
+
+	2 CURRENT INTERRUPT. Activates periodic Current Interrupt IR Compensation. If single interrupts via DORUPT command are wanted, use IRMODE 4).
+
+	3 Periodic CURRENT INTERRUPTS performed, but E not corrected. Required to store the error values, if desired, as specified with the SIE command. 
+
+	4 Prepare for Current Interrupt but don't do it (necessary preliminary to using DORUPT command).
+
+	In our experiments - 2
+
+IRUPT [250]
+	A SET/READ command, IRUPT (INTERMITTENT CURRENT INTERRUPT) establishes periodic Current Interrupt IR Compensation cycling. IRUPT sets the time between current interrupts in number of points based on the present TMB setting. The default corresponds to a 1 s interval. If "n" is omitted, it is a request for the Model 273A to report "n." Current-interrupt cycling begins when IRMODE 2 is applied.
+		n range: 1 to 32767.
+	Example: If IRUPT 10 were then applied (followed by IRMODE 2), an interrupt would be performed after every ten points. If TMB is 4000, this would be every 40,000 μs or 40 ms.
+
+	In Ozga system - 125 (which means 1/0.5 sec(?)), because TMB is at "default" = 4000
+
+TMB [4000]
+	A SET/READ command, TMB (TIMEBASE) sets the interval between samples in MICROSECONDS. When "n" is omitted, the command is a request for the Model 273A to report this information. TMB is a curve acquisition parameter; it doesn't affect the standby or scan timing. 
+	The range is: n range: 50...50000
+	Although "n" can be set to values as low as 50, it may not be possible to actually take data at the 50 μs rate. The time required to run the data acquisition routine must also be considered and can vary over a wide range. If the amount of time to execute the data acquisition interrupt routine exceeds the period of the timebase, the microprocessor will be unable to perform data acquisition at the desired rate. Furthermore, the microprocessor will be totally monopolized by the data acquisition routine and therefore will be unable to respond to commands until curve acquisition is completed.
+
+IRPC [100]
+	A SET/READ command, IRPC (IR PERCENT) establishes the percentage correction to be applied. If n is omitted, it is a request for the Model 273A to report the set percentage factor. This command applies to current interrupt operation only.
+	n range: 0 to 200
+	Example: To set a correction factor of 100%, apply: IRPC 100
+
+IRX 0 10 10
+IRX -1 10 10
+IRX -2 75 75
+IRX -3 75 75
+IRX -4 75 75	
+
+RX n1 n2 n3
+	A SET/READ command, IRX (IR EXTRAPOLATION) allows the user to specify the times that will be used to extrapolate back to the interrupt potential in determining the Current Interrupt (only) IR Compensation correction factor. The extrapolation times can be set independently for each current range. The command takes three operands. n1 selects the current range [0 = 1 A, -7 = 100 nA], while n2 and n3 select the points in time used for the extrapolation. n2 and n3 can range from 2 μs to 1997 μs, with n3 representing time elapsed since n2; n2 + n3 <= 1999. To request present settings, the command must include n1.A command error will be generated if IRX is sent by itself. The default values for n2 and n3 are 10 μs on the 1 A and 100 mA current ranges and 75 μs on all other current ranges. The codes are:
+
+	n1  0 to -7
+	n2  2 to 1997
+	n3  2 to 1997
+
+	Note: n2 + n3 <= 1999
+
+	So Ozga's program used default values
+
+FLT 0
+
+	A Set/Read command. To use it as a Set command, enter an operand value to select the desired combination of filters. To use it as a Read command, omit the operand value. The command then requests that the potentiostat report its filter status. To calculate an operand value, select the desired filters from the table that follows and add the decimal values for the selected filters together. Setting a bit to 1 (that is, including its decimal weight in the operand value) turns the associated filter ON. Setting a bit to 0 (not including its decimal weight) turns the associated filter OFF.
+
+	Ozga : clear filters
+
+BW 0
+	A SET/READ command, BW (BANDWIDTH) sets the bandwidth/stability parameter. If "n" is omitted, it is a request for the Model 273A to report this information. The codes are:
+	0 HIGH STABILITY; 1 HIGH SPEED
+
+I/E -4
+	I/E n [-3]: A SET/READ command, I/E (CURRENT TO VOLTAGE CONVERTER) sets the full-scale current range. If "n" is omitted, I/E requests that the Model 273A report the selected current range. The codes are:
+	 0   1A
+	-1   100 mA
+	-2   10 mA
+	-3   1 mA
+	-4   100 μA
+	-5   10 μA
+	-6   1 μA
+	-7   100 nA
+
+
+SETE -1200
+
+	A SET/READ command, SETE (SET POTENTIAL) sets the number of millivolts to be applied in the POTENTIOSTAT mode (only). If SETE is applied when the Model 273A is in the GALVANOSTAT mode, a command error (ERROR 11) will be generated. If "n" is omitted, it is a request for the Model 273A to report the SETE operand. 
+	n range: -8000...8000
+
+OUT 3
+	A SET/READ command, OUT sets the Output DAC mode. When applied without an operand, this command requests the Model 273A to read the mode and report it to the computer. The codes are:
+	0 NONE
+	1 LOG I
+	2 LINEAR I
+	3 COULOMBS
+	4 VALUE IN SETOUT
+
+READI;RUERR;Q;RUERR;CS;DUMMY
+
+READI
+	n1,n2: An ACTION READ command, READI (READ CURRENT) causes the Model 273A to take ten I samples and report their average to the computer. "n1" is the mantissa and "n2" the exponent. For example, a response of "1000 -6" would indicate a current of 1000 * 10-6 A, that is, 1 mA.
+	READI autoranges the I/E converter and automatically adjusts IGAIN to optimize data resolution. As a result, the IGAIN and I/E setting may change as a result of this command. Note that IGAIN settings of X10 and X50 are always reset as they are not used by READI. The READI response always "reads true", that is, it is adjusted for the IGAIN value as appropriate. Note 1: If this command is applied when a curve acquisition is in progress, an Acquisition Error (Error #12) is generated and no data is returned.
+
+RUERR
+	A READ ONLY command, RUERR (UNCOMPENSATED RESISTANCE ERROR) causes the compensation potential value, in mV, obtained from a current interrupt to be reported. It would normally be used when IRUPT cycling is in effect (DORUPT causes the compensation potential, in mV, for the initiated interrupt to be reported immediately.)
+
+Q
+	n1,n2: A READ command, Q (CHARGE) requests that the 273A report the total coulombs to the host computer. "n1" is the mantissa and "n2" the exponent, that is:
+	Q = n1 x 10^n2 coulombs
+
+KEY 57
+	reset integral(?)
+
+AR 3;CELL 1
+
+AR
+	A SET/READ command, AR (AUTO-RANGE) turns the auto-ranging function ON or OFF for any of three different parameters, CURRENT, POTENTIAL, or AUX A/D INPUT. If "n" is omitted, the command requests the Model 273A to report its autoranging status. AR differs from AS in that, whereas AS causes a single current auto-range to take place, AR establishes a continuously active mode. Auto-ranging is functional in the STANDBY, SCAN, and CURVE ACQUISITION modes.
+	=  ========= ======== ============
+	I  AUTO-RNGE AUTO-RNG AUX AUTO-RNG
+	=  ========= ======== ============
+	0 	OFF	      OFF      OFF
+	1   ON        OFF      OFF
+	2   OFF       ON       OFF
+	3   ON        ON       OFF
+	4   OFF       OFF      ON
+	5   ON        OFF      ON
+	6   OFF       ON       ON
+	7 	ON        ON       ON
+
+CELL
+	A SET/READ command, CELL controls the internal cell relay and active FET switch. If "n" is omitted, the command is a request that the Model 273A report the relay/switch status. The front-panel CELL ENABLE switch MUST be in the ON position for the counter-electrode path to the cell to be completed. This is always true and applies to both front-panel and computer-controlled operation. The codes are:
+	0: OFF; 1: ON
+
+CELL 0;DCL
+
+USR2 EGAIN 50;A/D
+
+EGAIN
+	A SET/READ command, EGAIN (POTENTIAL GAIN) sets the potential measurement gain ahead of the Analog-to-Digital Converter to either X1, X5, X10, or X50. The gain determines the value sent to the host computer as the potential reading. If the gain is X1 or X5, the number of counts (number read) is exactly the potential in mV. If the gain is X10 or X50, the number of counts is exactly the potential in tenths of mV. An example follows.
+
+	EGAIN   READING
+	X1      100
+	X5      100	
+	X10     1000
+	X50     1000
+
+	The reading is always "true." However, with a gain of X1 or X5, the units are mV. With a gain of X10 or X50, the units are tenths of mV. The host computer must expect and accommodate the change. Note that the AR command, described earlier, also controls EGAIN. As explained in the description of the AR command, AR can switch the potential gain between X1 and X5 as required to achieve the best resolution in reported potential readings. However, AR does not affect the additional X10 gain multiplier. If the X10 multiplier was previously activated by the commands EGAIN 10 or EGAIN 50, AR will switch the net gain between X10 and X50. If the X10 multiplier is not active (EGAIN 1 or EGAIN 5), AR will switch the net gain between X1 and X5. The user might note that the READE command also affects EGAIN in that it automatically deactivates the additional X10 gain multiplier whenever it is applied.
+	
+	For highest accuracy, the gain should be as high as possible consistent with keeping the amplified voltage below 10. If the gain is too high, the range of the internal circuitry will be exceeded. If the gain is too low, resolution will be lost. A listing of recommended gain versus monitored potential follows.
+		
+	|E|							RECOMMENDED EGAIN
+	<200 mV                     X50	
+	between 200 mV and 1 V      X10
+	between 1 V and 2 V         X5
+	>2 V                        X1
+	
+	Note: The READE command automatically sets EGAIN to X1 or X5, whichever gives the most
+	accurate READE measurement. If the X10 additional gain multiplier is active when READE is
+	applied, READE immediately deactivates it. Thus, an operator-set value of EGAIN X10 or EGAIN
+	X50 can be lost. Recall that the reported value is direct reading in mV when the net EGAIN is X1 or
+	X5.
+
+A/D
+	A READ command, A/D (ANALOG TO DIGITAL CONVERSION) bypasses the normal timing and control cycling and causes an IMMEDIATE A/D conversion. The resulting reading is transmitted to the host computer. This command is not used in normal data acquisition.
+
+USR3 OVER;CS;DUMMY;EGAIN
+	n1,n2,n3: A READ command, OVER (OVERLOAD) is a request for the Model 273A to report its overload status. The Model 273A responds with three numbers. "n1" gives the overload status at the time the command is executed. "n2" reports on the status during the interval since the last time an OVER command was applied. If an overload occurred at any time during that interval, it will be reported in the second response number, independent of whether the unit is in overload when the OVER command is applied. "n3" reports the cumulative overload status at the input to the A/D Converter. If IGAIN, EGAIN, or AUXGAIN are X5 or higher (AUXGAIN is limited to X5 maximum), overload can occur at the A/D Converter with no overload elsewhere in the Model 273A. This is true for both manually set and autoranged gain settings. Note that "n3" is only maintained in FRILLS operation. It is not maintained in SOME FRILLS or NO FRILLS operation. For a detailed discussion of the meaning of FRILLS, SOME FRILLS, and NO FRILLS, see the description of the TMB command. The codes for all three responses are:
+
+	n1,n2,n3   MEANING
+	0          NO OVERLOAD
+	1          I OVERLOAD
+	2          E OVERLOAD
+	3          I and E OVERLOAD
+	4          AUX OVERLOAD
+	5          AUX & I OVERLOAD
+	6          AUX & E OVERLOAD
+	7          AUX, I, & E OVERLOAD
+
+	Note that "n2 and "n3" are cleared on completing the execution of each "OVER" command. As a result, they reflect the cumulative overload status since the previous time an OVER command was invoked. The Overload status is available in the Standby, Scan, and Curve Acquisition modes.
+
+
+ESUP 0;READE;SIE 2;EGAIN 50
+ESUP -5
+
+ESUP
+	A SET/READ command, ESUP (POTENTIAL SUPPRESS) allows the E potential signal (only; not AUX or ûE) to be suppressed ahead of the gain stages that precede the Analog to Digital Converter. If applied without an operand, ESUP requests the Model 273A to report the suppression value. Suppression is in units of 2 mV/count with a range of ±5000 for a full-scale range of ±10 V. Positive values are added to the cell signal. Note that ESUP worked differently on the older Model 273/97 Option board. On the /97 Option, suppression was still ±10 V but n could range from ±10000, so that each count corresponded to 1 mV. A major difference was the sign of the applied signal. Positive values were subtracted from, not added to, the cell signal. By allowing the static potential value to be suppressed, ESUP allows small fluctuations with respect to the static value to be readily examined. Note that ESUP is effective whether the unit is running a curve, in Standby, or doing a scan.
+
+READE
+	An ACTION READ command, READE (READ POTENTIAL) causes the Model 273A to take ten E samples and report the average of these values. 
+	n range: -10000...10000 (corresponds to -10 V to +10 V)
+	READE automatically adjusts the X1, X5 aspect (only) of EGAIN as required to get the most accurate reading. Thus, if EGAIN was previously set by the user to a desired value, that setting may be lost. Moreover, if the X10 gain is on (EGAIN 10 or 50), READE always will turn it off, making it necessary for you to reapply EGAIN 10 or 50 afterwards if the X10 or X50 gain level is to be restored. Note that the value reported by READE will "read true", in mV. No conversion from counts to mV is required.
+
+SIE
+	A SET/READ command, SIE (SAMPLE I/E) determines whether the sampled parameter will be current (I), the Electrometer Monitor potential (E), the potential applied to the rear-panel AUX A/D INPUT (AUX), the Current Interrupt IR Compensation Potential (deltaE), or any combination of these parameters. If "n" is omitted, this command is a request for the Model 273A to report the SIE setting. The codes are:
+
+	n           I              E           AUX        deltaE                  
+	0           OFF            OFF         OFF        OFF
+	1           ON             OFF         OFF        OFF
+	2           OFF            ON          OFF        OFF
+	3           ON             ON          OFF        OFF
+	4           OFF            OFF         ON         OFF
+	5           ON             OFF         ON         OFF
+	6           OFF            ON          ON         OFF
+	7           ON             ON          ON         OFF
+	8           OFF            OFF         OFF        ON
+	9           ON             OFF         OFF        ON
+	10          OFF            ON          OFF        ON
+	11          ON             ON          OFF        ON
+	12          OFF            OFF         ON         ON
+	13          ON             OFF         ON         ON
+	14          OFF            ON          ON         ON
+	15          ON             ON          ON         ON
+
+
+
+
+
+
+
